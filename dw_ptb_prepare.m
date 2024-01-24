@@ -1,7 +1,7 @@
 %% For screen
 
 % Here we call some default settings for setting up Psychtoolbox
-PsychDefaultSetup(2);
+PsychDefaultSetup(1);
 
 % Get the screen numbers
 screens=Screen('Screens'); % USE THIS LINE FOR EXPERIMENT
@@ -14,8 +14,8 @@ screens=Screen('Screens'); % USE THIS LINE FOR EXPERIMENT
 %HideCursor();
 
 % Select screen
-screenNumber = max(screens);
-% screenNumber = 1;
+% screenNumber = max(screens);
+screenNumber = 1;
 
 % Define black, white and grey
 black = BlackIndex(screenNumber);

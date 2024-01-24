@@ -3,7 +3,7 @@ clear all;
 close all;
 sca;
 
-direxp = 'C:\Users\dsw27\Documents\MATLAB\Speech_processing_attention';
+direxp = 'C:\Experiments\Dominic';
 cd(direxp)
 stimFolder = '\stimuli\'; % stimuli folder
 soundFileNames = dir('stimuli\*.wav'); % audio files
@@ -17,21 +17,19 @@ tExpStart = tic;
 
 %% Get subject and block numbers
 prompt = {'Subject:','Block:','Condition:','Chapter:'}; % condition: 1 - auditory, 2 - low load, 3 - high load
-answer{1} = input(prompt{1});
-answer{2} = input(prompt{2});
-answer{3} = input(prompt{3});
-answer{4} = input(prompt{4});
-subject = answer{1};
-block = answer{2};
-condition = answer{3};
-chapter = answer{4};
+dlg_title = 'Input';
+answer = inputdlg(prompt,dlg_title,1);
+subject = str2num(answer{1});
+block = str2num(answer{2});
+condition = str2num(answer{3});
+chapter = str2num(answer{4});
 
 nTrials = 60;
 
 %% Parameters
 debugMode = 0; % setting this to 1 makes it easier to test on own computer (but don't use for actual experiment!)
 ITI = 1.3 : .025 : 1.7;
-fs = 16000; % originally 16000 trying to change to see if helps with sound driver issue
+fs = 48000;
 nrchannels = 2;
 
 % settings for MOT
@@ -56,7 +54,7 @@ rightKey = KbName('RightArrow');
 %% Initialise EEG triggers
 
 % configure serial port for triggers
-% [handle, errmsg] = IOPort('OpenSerialPort', 'COM3', ' BaudRate=115200 DataBits=8 StopBits=1 Parity=None');
+[handle, errmsg] = IOPort('OpenSerialPort', 'COM3', ' BaudRate=115200 DataBits=8 StopBits=1 Parity=None');
 
 triggerSpeechOnset = uint8(255);
 triggerSpeechOffset = uint8(245);
@@ -71,7 +69,7 @@ randOrder = randperm(nTrials);
 tarSeq = mod(randOrder, 2);
 
 %% Prepare data file
-data = {'Subject','Block','Condition','Chapter','Target','Response','Sound onset','MOT onset'};
+data = {'Subject','Block','Condition','Chapter','Target','Response','Sound onset','MOT onset','MOT offset'};
 
 %% Prepare screen, inputs and sound
 dw_ptb_prepare;
@@ -93,7 +91,7 @@ audioCurrent = audioCurrent'; % Transpose for psychtoolbox
 %% Present intro screen to participant
 
 % display prompt
-DrawFormattedText(window, ['Please fixate at the center of the screen during the task (blinks are no problem)\n\n' ...
+DrawFormattedText(window, ['Please fixate on the point at the center of the screen during the task (blinks are OK)\n\n' ...
                             'Try to keep as still as possible throughout\n\n\n\n' ...
                             'To answer any questions on screen, use the LEFT and RIGHT arrow keys\n\n'...
                             'Press any key to continue'], 'center', 'center', white);
@@ -116,7 +114,7 @@ else % attend to visual
                                 'You will see multiple white dots appear on the screen\n\n' ...
                                 'Some of the dots will briefly flash red\n\n' ...
                                 'All of the dots will then start to move\n\n' ...
-                                'Your task is to track the dots that flashed red\n\n\n\n' ...
+                                'Your task is to track the dots that flashed red, while fixating at the middle of the screen\n\n\n\n' ...
                                 'After a short period, all the dots will stop moving and one dot will turn green\n\n' ...
                                 'You will be asked if this dot was one of the red dots you were asked to track\n\n\n\n' ...
                                 'IGNORE any audio stimulation\n\n\n\n' ...
@@ -135,7 +133,7 @@ WaitSecs(1);
 % Start audio playback
 tStartSoundCurrent = PsychPortAudio('Start', pahandle, 1, 0, waitForDeviceStart);
 % Send EEG trigger at sound onset
-% IOPort('Write',handle,triggerSpeechOnset);
+IOPort('Write',handle,triggerSpeechOnset);
 
 for trial=1:nTrials % Loop for one block
 
@@ -179,7 +177,7 @@ for trial=1:nTrials % Loop for one block
     WaitSecs(2);
 
     % Send EEG trigger at MOT onset
-    % IOPort('Write',handle,triggerMOTOnset);
+    IOPort('Write',handle,triggerMOTOnset);
     % present MOT
     flipTime = Screen('Flip', window);
     MOTOnset = flipTime;
@@ -194,7 +192,7 @@ for trial=1:nTrials % Loop for one block
         flipTime(fi) = Screen('Flip', window, flipTime(end) + screenDT - slack,0);
     end
     % Send EEG trigger at MOT offset
-    % IOPort('Write',handle,triggerMOTOffset);
+    IOPort('Write',handle,triggerMOTOffset);
 
     % which dot to highlight for the task
     if tarSeq(trial) == 1 % target out of the marked dots
@@ -212,11 +210,9 @@ for trial=1:nTrials % Loop for one block
     Screen('FillOval', window, taskCol, dotPos(:,ismember(1:size(dotPos,2),ixmark),end), objSize);
     Screen('FrameRect', window,frameCol,trackRect,qFrame); % drawn frame around the dot area
     Screen('FillRect', window,fixCol,[xMid-fixSize,yMid-fixSize,xMid+fixSize,yMid+fixSize]); % draw fixation box
-    Screen('Flip', window);
+    flipTime = Screen('Flip', window);
+    MOTOffset = flipTime;
     WaitSecs(1);
-    % DrawFormattedText(window, '', 'center', 'center', black);
-    % Screen('Flip', window);
-    % WaitSecs(0.1);
     
     if condition == 2 || 3 % MOT task
         % get response
@@ -224,7 +220,7 @@ for trial=1:nTrials % Loop for one block
     
         while respToBeMade == true
             % draw response screen
-            DrawFormattedText(window, ['Was the marked dot one of the ones you were asked to track?\n\n\n' ...
+            DrawFormattedText(window, ['Was the green dot one of the ones you were asked to track?\n\n\n' ...
                                         'Yes ................... No'], 'center', 'center', white);
             % flip to the screen
             Screen('Flip', window);
@@ -260,7 +256,7 @@ for trial=1:nTrials % Loop for one block
         Screen('Flip', window);
         WaitSecs(2);
         % send trigger at written feedback onset
-        % IOPort('Write',handle,triggerFeedbackOnset);
+        IOPort('Write',handle,triggerFeedbackOnset);
     else        % Auditory only
         response = 3; % no response
     end
@@ -273,7 +269,7 @@ for trial=1:nTrials % Loop for one block
     WaitSecs(ITIcurrent);
 
     % Collect data
-    data(1+trial,:) = [{subject},{block},{condition},{chapter},{tarSeq(trial)},{response},{tStartSoundCurrent},{MOTOnset}];
+    data(1+trial,:) = [{subject},{block},{condition},{chapter},{tarSeq(trial)},{response},{tStartSoundCurrent},{MOTOnset},{MOTOffset}];
 
     % Display progress to experimenter
     fprintf('\nTrial %d: Target %d, Response %d...\n',trial,tarSeq(trial),response);
@@ -282,7 +278,7 @@ end
 % Stop audio playback
 [~,~,~,tEndSoundCurrent] = PsychPortAudio('Stop',pahandle,1);
 % Send EEG trigger at sound offset
-% IOPort('Write',handle,triggerSpeechOffset);
+IOPort('Write',handle,triggerSpeechOffset);
 
 %% End of block screen
 DrawFormattedText(window, '***END OF BLOCK***','center', 'center', white);
@@ -290,8 +286,8 @@ Screen('Flip', window);
 WaitSecs(4);
 
 %% Shut down and save data
-es_ptb_close;
-% IOPort('CloseAll');
+dw_ptb_close;
+IOPort('CloseAll');
 
 %% Note when script finished
 tExpDur = toc(tExpStart)/60;
