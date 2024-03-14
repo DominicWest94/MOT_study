@@ -59,7 +59,7 @@ waitForDeviceStart = 1;
 % (3) 1 = default level of latency
 % (4) Requested frequency in samples per second
 % (5) 2 = stereo putput
-pahandle = PsychPortAudio('Open', [], 1, 1, [], nrchannels);
+pahandle = PsychPortAudio('Open', [], 1, 4, fs, nrchannels);
 
 % Set the volume to half
 %PsychPortAudio('Volume', pahandle, 0.5);
