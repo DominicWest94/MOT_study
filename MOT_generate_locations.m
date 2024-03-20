@@ -1,11 +1,10 @@
 clear all
 format compact
-direxp = '/Users/dominicwest/Documents/Uni/PhD/MATLAB/Speech_processing_attention';
+direxp = 'C:\Experiments\Dominic';
 cd(direxp)
-addpath(genpath('MATLAB'))
 
 % parameters
-nMovies   = 60;
+nMovies   = 30;
 
 frameRate = 60;
 frameTime = 1/frameRate;
@@ -17,7 +16,7 @@ numDots   = 16; % total # of objects
 objSize   = 14; % radius of the objects (16 ~ 1deg)
 angleSD   = 10; % standard deviation of motion perturbations that occur each frame
 objBuffer = 24; % distance in pixels around an object that another object cannot enter
-speed     = 1.5;  % frames per second
+speed     = 0.8;  % frames per second
 w         = 0;  % do not make a gif
 
 

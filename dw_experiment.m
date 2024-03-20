@@ -51,9 +51,9 @@ fs = 48000;
 nrchannels = 2;
 
 % settings for MOT
-speed     = 0.8; % check if this is correct
+speed     = 0.8;
 objSize   = 14;
-nDots     = 14;
+nDots     = 16;
 fixSize   = 4; % size of the fixation box (well, half of it - the distance from the middle to edge horizontally/vertically)
 qFrame    = 1; % width of frame around each tracking quadrant
 fixCol    = [255 255 0]; % color of fixation box
@@ -79,21 +79,21 @@ fourKey = KbName('4');
 [handle, errmsg] = IOPort('OpenSerialPort', 'COM3', ' BaudRate=115200 DataBits=8 StopBits=1 Parity=None');
 
 triggerEEGOnset = uint8(255);
-triggerEEGOffset = unint8(250);
-triggerConditionAudio = unint8(95);
-triggerConditionVisual = unint8(105);
-triggerMOTLoadHigh = unint8(115);
-triggerMOTLoadLow = unint8(125);
-triggerChapter1 = unint8(135);
-triggerChapter2 = unint8(145);
-triggerChapter3 = unint8(155);
-triggerChapter4 = unint8(165);
-triggerChapter5 = unint8(175);
-triggerChapter6 = unint8(185);
-triggerSpeechOnset = unint8(195);
+triggerEEGOffset = uint8(250);
+triggerConditionAudio = uint8(95);
+triggerConditionVisual = uint8(105);
+triggerMOTLoadHigh = uint8(115);
+triggerMOTLoadLow = uint8(125);
+triggerChapter1 = uint8(135);
+triggerChapter2 = uint8(145);
+triggerChapter3 = uint8(155);
+triggerChapter4 = uint8(165);
+triggerChapter5 = uint8(175);
+triggerChapter6 = uint8(185);
+triggerSpeechOnset = uint8(195);
 triggerSpeechOffset = uint8(205);
 triggerResponseOnset = uint8(215);
-triggerFeedbackOnset = unit8(225);
+triggerFeedbackOnset = uint8(225);
 triggerMOTOnset = uint8(235);
 triggerMOTOffset = uint8(245);
 
@@ -139,23 +139,23 @@ KbStrokeWait;
 
 % display prompt
 if condition == 1 % attend to audio
-    DrawFormattedText(window, ['Please pay attention only to the AUDITORY stimulation\n\n\n\n' ...
+    DrawFormattedText(window, ['Please pay attention only to the AUDIO\n\n\n\n' ...
                                 'In the following you will hear a section of an audiobook\n\n' ...
                                 'Your task is to listen\n\n' ...
                                 'Ignore any visual stimulation, but continue to fixate at the centre of the screen\n\n' ...
                                 'You will occasionally be asked questions about the audiobook\n\n' ...
-                                'Answer these questions using the number keys, from 1 to 4' ...
+                                'Answer these questions using the number keys, from 1 to 4 (place your fingers over these keys now)\n\n' ...
                                 'Press any key to continue'], 'center', 'center', white);
 else % attend to visual
-    DrawFormattedText(window, ['Please pay attention only to the VISUAL stimulation\n\n\n\n' ...
-                                'You will see multiple white dots appear on the screen\n\n' ...
+    DrawFormattedText(window, ['Please pay attention only to the VISUAL task\n\n\n\n' ...
+                                'You will see a collection of white dots appear on the screen\n\n' ...
                                 'Some of the dots will briefly flash red\n\n' ...
                                 'All of the dots will then start to move\n\n' ...
                                 'Your task is to track the dots that flashed red, using your peripheral vision\n\n' ...
                                 'Continue to fixate on the centre of the screen\n\n' ...
                                 'After a short period, all the dots will stop moving and one dot will turn green\n\n' ...
-                                'You will be asked if this dot was one of the red dots you were asked to track\n\n\n\n' ...
-                                'Answer using the LEFT or RIGHT arrow keys' ...
+                                'You will be asked if this dot was one of the red dots you were asked to track\n\n' ...
+                                'Answer using the LEFT or RIGHT arrow keys (place your fingers over these keys now)\n\n\n\n' ...
                                 'Ignore any audio throughout, focusing only on the visual task\n\n\n\n' ...
                                 'Press any key to continue'], 'center', 'center', white);
 end
@@ -252,7 +252,7 @@ for trial=1:nTrials % Loop for one block
     Screen('FrameRect', window,frameCol,trackRect,qFrame); % drawn frame around the dot area
     Screen('FillRect', window,fixCol,[xMid-fixSize,yMid-fixSize,xMid+fixSize,yMid+fixSize]); % draw fixation box
     Screen('Flip', window);
-    WaitSecs(1);
+    WaitSecs(2);
 
     % Send trigger at MOT onset
     IOPort('Write',handle,triggerMOTOnset);
@@ -334,7 +334,7 @@ for trial=1:nTrials % Loop for one block
         Screen('Flip', window);
         
         % Collect data
-        data(1+trial,:) = [{subject},{block},{condition},{chapter},{tarSeq(trial)},{response},{succTrial},{tStartSoundCurrent},{MOTOnset},{MOTOffset}];
+        data(1+trial,:) = [{subject},{block},{condition},{MOTLoad},{chapter},{tarSeq(trial)},{response},{succTrial},{tStartSoundCurrent},{MOTOnset},{MOTOffset}];
 
         % Calculate accuracy
         accRate = round(mean(cellfun(@mean, data(2:end,7)))*100,1);
