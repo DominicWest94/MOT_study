@@ -23,12 +23,18 @@ subject = str2num(answer{1});
 block = str2num(answer{2});
 nTrials = 30;
 
-load('blockOrder.mat')
-% Find the row index, assign Condition, MOTLoad and Chapter
-rowIndx = find([blockOrder{2:end,1}] == subject & [blockOrder{2:end,2}] == block) + 1;
-condition = blockOrder{rowIndx,3};
-MOTLoad = blockOrder{rowIndx,4};
-chapter = blockOrder{rowIndx,5};
+if subject == 0
+    condition = 2;
+    MOTLoad = 2;
+    chapter = 7;
+else
+    load('blockOrder.mat')
+    % Find the row index, assign Condition, MOTLoad and Chapter
+    rowIndx = find([blockOrder{2:end,1}] == subject & [blockOrder{2:end,2}] == block) + 1;
+    condition = blockOrder{rowIndx,3};
+    MOTLoad = blockOrder{rowIndx,4};
+    chapter = blockOrder{rowIndx,5};
+end
 
 if condition == 1
     conditionStr = 'Auditory';
@@ -410,7 +416,7 @@ for trial=1:nTrials % Loop for one block
 
         % Collect data
         data(1+trial,:) = [{subject},{block},{condition},{MOTLoad},{chapter},{tarSeq(trial)},{response},{succTrial},{tStartSoundCurrent},{MOTOnset},{MOTOffset}];
-
+        WaitSecs(1); % allow time for participant to blink before the next trial begins
     end
 
     % Clear screen
@@ -425,7 +431,7 @@ for trial=1:nTrials % Loop for one block
 end
 
 % Stop audio playback
-[~,~,~,tEndSoundCurrent] = PsychPortAudio('Stop',pahandle,1);
+[~,~,~,tEndSoundCurrent] = PsychPortAudio('Stop',pahandle);
 % Send trigger at sound offset
 IOPort('Write',handle,triggerSpeechOffset);
 
