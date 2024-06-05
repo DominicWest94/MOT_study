@@ -74,10 +74,9 @@ KbName('UnifyKeyNames');
 escapeKey = KbName('ESCAPE');
 leftKey = KbName('LeftArrow');
 rightKey = KbName('RightArrow');
-oneKey = KbName('1');
-twoKey = KbName('2');
-threeKey = KbName('3');
-fourKey = KbName('4');
+oneKey = KbName('1!');
+twoKey = KbName('2@');
+threeKey = KbName('3#');
 
 %% Initialise EEG triggers
 
