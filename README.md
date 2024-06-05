@@ -1,9 +1,6 @@
 # Speech Processing - MOT study
 ## A Multiple Object Tracking (MOT) task to manipulate attention during speech processing
 
-experiment - all scripts and stimuli used during the experiment
-analysis - the main scripts used for pre-processing and analysis, excluding any toolboxes and plugins
-
 ### Experiment files
 MOT_generate_locations.m is the script used to generate the movies used in the MOT task.
 MOTmovie.m is the function used by MOT_generate_locations.m to create the movies.
