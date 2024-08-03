@@ -253,7 +253,7 @@ for s=1:numel(SID)
     %% Permutation statistics
 
     %nullstats = mTRFpermute(stim_epoch,resp_epoch,fs,-1,'permute',tmin,tmax,lambda);
-
+%     [pred, stats] = mTRFpredict(all_audio_stim,all_audio_resp,average_audio_model)
     %% Save data
 
     if ~isfolder(analysis_folder); mkdir(analysis_folder); end

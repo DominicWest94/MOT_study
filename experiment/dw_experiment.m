@@ -349,21 +349,11 @@ for trial=1:nTrials % Loop for one block
 
         % Draw feedback text
         if response == tarSeq(trial)
-            if mod(trial,5) == 0
-                DrawFormattedText(window, ['Correct\n\n\nAccuracy: ' num2str(accRate) '%'], 'center', 'center', white);
-                IOPort('Write',handle,triggerFeedbackOnset);
-            else
-                DrawFormattedText(window, 'Correct', 'center', 'center', white);
-                IOPort('Write',handle,triggerFeedbackOnset);
-            end
+            DrawFormattedText(window, 'Correct', 'center', 'center', white);
+            IOPort('Write',handle,triggerFeedbackOnset);
         else
-            if mod(trial,5) == 0
-                DrawFormattedText(window, ['Incorrect\n\n\nAccuracy: ' num2str(accRate) '%'], 'center', 'center', white);
-                IOPort('Write',handle,triggerFeedbackOnset);
-            else
-                DrawFormattedText(window, 'Incorrect', 'center', 'center', white);
-                IOPort('Write',handle,triggerFeedbackOnset);
-            end
+            DrawFormattedText(window, 'Incorrect', 'center', 'center', white);
+            IOPort('Write',handle,triggerFeedbackOnset);
         end
         % flip to the screen
         Screen('Flip', window);
@@ -435,7 +425,11 @@ end
 IOPort('Write',handle,triggerSpeechOffset);
 
 %% End of block screen
-DrawFormattedText(window, '***END OF BLOCK***','center', 'center', white);
+if condition == 2 % visual
+    DrawFormattedText(window, ['Accuracy: ' num2str(accRate) '%\n\n\n***END OF BLOCK***'], 'center', 'center', white);
+else
+    DrawFormattedText(window, '***END OF BLOCK***', 'center', 'center', white);
+end
 Screen('Flip', window);
 WaitSecs(4);
 IOPort('Write',handle,triggerEEGOffset);
