@@ -141,7 +141,10 @@ for b=1:length(blocksin)
     S.D = fullfile(subjectPath,D.fname);
     S.fsample_new = 64;
     D = spm_eeg_downsample_nt(S);
-
+    
+    %% Plot topos
+    es_plotTopo;
+    
 end
 
 fprintf('\nPreprocessing finished!\n');

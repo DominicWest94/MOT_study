@@ -14,12 +14,10 @@ for s=1:length(fileName)
 end
 
 %% Epoching and mTRF modelling
+dw_batch_encoding;
 
-dw_batch_encoding_env;
-dw_batch_encoding_phoneme;
+%% Find best sensors
+dw_maxSensors;
 
-%% Refined mTRF modelling
-dw_maxSensorsEnv;
-dw_maxSensorsPh;
-dw_batch_encoding_env_MaxSensors;
-dw_batch_encoding_phoneme_MaxSensors;
+%% Average mTRF
+dw_average_plots;
